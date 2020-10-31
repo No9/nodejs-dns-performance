@@ -39,3 +39,22 @@ spec:
       maxSurge: 25%
   revisionHistoryLimit: 10
   progressDeadlineSeconds: 600
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nodejs-dns-performance-service
+  namespace: default
+  labels:
+    app: nodejs-dns-performance-service
+spec:
+  ports:
+    - name: main
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: nodejs-dns-performance
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
