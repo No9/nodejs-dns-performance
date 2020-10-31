@@ -18,18 +18,18 @@ usdt::http__server__response
     delete(@startrequest[tid]);
 }
 
-uprobe:/usr/lib64/libc.so.6:getaddrinfo,
-uprobe:/usr/lib64/libc.so.6:gethostbyname,
-uprobe:/usr/lib64/libc.so.6:gethostbyname2
+uprobe:/lib/x86_64-linux-gnu/libc.so.6:getaddrinfo,
+uprobe:/lib/x86_64-linux-gnu/libc.so.6:gethostbyname,
+uprobe:/lib/x86_64-linux-gnu/libc.so.6:gethostbyname2
 /@host && @path && @method/
 {
         @start[tid] = nsecs;
         @name[tid] = arg0;
 }
 
-uretprobe:/usr/lib64/libc.so.6:getaddrinfo,
-uretprobe:/usr/lib64/libc.so.6:gethostbyname,
-uretprobe:/usr/lib64/libc.so.6:gethostbyname2
+uretprobe:/lib/x86_64-linux-gnu/libc.so.6:getaddrinfo,
+uretprobe:/lib/x86_64-linux-gnu/libc.so.6:gethostbyname,
+uretprobe:/lib/x86_64-linux-gnu/libc.so.6:gethostbyname2
 /@start[tid] && @host && @path && @method/
 {
 	$latms = (nsecs - @start[tid]) / 1000000;

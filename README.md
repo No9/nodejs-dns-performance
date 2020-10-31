@@ -41,7 +41,29 @@ This is a work in process to support a future blog post on https://venshare.com/
 
 ## kubernetes usage
 
-TODO.
+This demo should work on any kubernetes clusters but these steps will take you through running the code on a Free kubernetes cluster on IBM Cloud.
+
+1. Deploy the sample app to the default namespace your cluster
+    ```
+    $ kubectl apply -f deployment.yaml
+    ```
+
+2. The deployment also container a nodeport service. Validate the the service has been exposed. Get the public node IP and the port of the service.
+    ```
+    $ ibmcloud ks worker ls --cluster $CLUSTER_NAME
+    ID                                                       Public IP        Private IP       Flavor   State    Status   Zone    Version   
+    kube-buem3v1f086vb3t9m4g0-bpftracedem-default-0000003f   159.122.175.48   10.144.195.187   free     normal   Ready    mil01   1.18.10_1531   
+    
+    $ kubctl get svc
+    kubernetes                       ClusterIP   172.21.0.1     <none>        443/TCP          33m
+    nodejs-dns-performance-service   NodePort    172.21.59.41   <none>        3000:31286/TCP   11m
+    ```
+3. curl the endpoint to ensure it's working
+    ```
+    $ curl http://159.122.175.48:31286/
+    ["Skate ipsum dolor sit amet,  flail boneless ....
+    ```
+
 
 ## modifying the bt script
 
