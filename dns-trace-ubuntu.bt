@@ -1,0 +1,39 @@
+
+usdt::http__server__request {
+    @host = arg2;
+    @path = arg5;
+    @method = arg4;
+    @startrequest[tid] = nsecs;
+    time("%H:%M:%S  ");
+    printf("%s %s%s\n", str(@method), str(@host), str(@path));
+}
+usdt::http__server__response 
+/@host && @path && @method/
+{
+    $latms = (nsecs - @startrequest[tid]) / 1000000;
+    printf("Total Request Time: %6d ms \n", $latms);
+    delete(@host);
+    delete(@path);
+    delete(@method);
+    delete(@startrequest[tid]);
+}
+
+uprobe:/usr/lib64/libc.so.6:getaddrinfo,
+uprobe:/usr/lib64/libc.so.6:gethostbyname,
+uprobe:/usr/lib64/libc.so.6:gethostbyname2
+/@host && @path && @method/
+{
+        @start[tid] = nsecs;
+        @name[tid] = arg0;
+}
+
+uretprobe:/usr/lib64/libc.so.6:getaddrinfo,
+uretprobe:/usr/lib64/libc.so.6:gethostbyname,
+uretprobe:/usr/lib64/libc.so.6:gethostbyname2
+/@start[tid] && @host && @path && @method/
+{
+	$latms = (nsecs - @start[tid]) / 1000000;
+	printf("    DNS Lookup %s %-6d %6d ms \n", str(@name[tid]), pid, $latms);
+	delete(@start[tid]);
+	delete(@name[tid]);
+}
