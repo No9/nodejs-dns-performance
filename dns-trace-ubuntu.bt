@@ -8,7 +8,7 @@ usdt::http__server__request {
     printf("%s %s%s\n", str(@method), str(@host), str(@path));
 }
 usdt::http__server__response 
-/@host && @path && @method/
+/@host && @path && @method && @startrequest[tid]/
 {
     $latms = (nsecs - @startrequest[tid]) / 1000000;
     printf("Total Request Time: %6d ms \n", $latms);
